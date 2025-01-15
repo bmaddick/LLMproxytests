@@ -4,20 +4,46 @@ import { Input } from "./components/ui/input"
 import { Button } from "./components/ui/button"
 import { ScrollArea } from "./components/ui/scroll-area"
 import { Send } from "lucide-react"
+import { apiClient } from './lib/api/claude'
+import type { Message as ApiMessage } from './lib/api/types'
 
-interface Message {
+interface ChatMessage {
   text: string
   isUser: boolean
 }
 
 function App() {
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputText, setInputText] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSend = () => {
-    if (inputText.trim()) {
-      setMessages([...messages, { text: inputText, isUser: true }])
+  const handleSend = async () => {
+    if (inputText.trim() && !isLoading) {
+      const userMessage: ChatMessage = { text: inputText, isUser: true }
+      setMessages(prev => [...prev, userMessage])
       setInputText('')
+      setError(null)
+      setIsLoading(true)
+
+      try {
+        const apiMessages: ApiMessage[] = messages.concat(userMessage).map(msg => ({
+          role: msg.isUser ? 'user' : 'assistant',
+          content: msg.text
+        }))
+
+        const response = await apiClient.sendMessage(apiMessages)
+        
+        setMessages(prev => [...prev, {
+          text: response.content,
+          isUser: false
+        }])
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred while sending the message')
+        console.error('Error:', err)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -57,6 +83,11 @@ function App() {
             </div>
           </ScrollArea>
 
+          {error && (
+            <div className="p-2 m-4 text-red-500 text-sm bg-red-50 rounded">
+              {error}
+            </div>
+          )}
           <div className="p-4 border-t flex gap-2">
             <Input
               value={inputText}
@@ -64,9 +95,18 @@ function App() {
               onKeyDown={handleKeyPress}
               placeholder="Type your message..."
               className="flex-1"
+              disabled={isLoading}
             />
-            <Button onClick={handleSend} className="px-4">
-              <Send className="w-4 h-4" />
+            <Button 
+              onClick={handleSend} 
+              className="px-4"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
             </Button>
           </div>
         </div>
