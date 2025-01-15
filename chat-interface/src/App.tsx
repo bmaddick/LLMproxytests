@@ -3,6 +3,8 @@ import { Card } from "./components/ui/card"
 import { Input } from "./components/ui/input"
 import { Button } from "./components/ui/button"
 import { ScrollArea } from "./components/ui/scroll-area"
+import { Textarea } from "./components/ui/textarea"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"
 import { Send } from "lucide-react"
 import { apiClient } from './lib/api/claude'
 import type { Message as ApiMessage } from './lib/api/types'
@@ -13,10 +15,19 @@ interface ChatMessage {
 }
 
 function App() {
+  const [activeTab, setActiveTab] = useState('chat')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputText, setInputText] = useState('')
+  const [longformInput, setLongformInput] = useState('')
+  const [longformResponse, setLongformResponse] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const handleLongformInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value
+    setLongformInput(value)
+    setLongformResponse(value.trim() ? 'Input received' : '')
+  }
 
   const handleSend = async () => {
     if (inputText.trim() && !isLoading) {
@@ -57,10 +68,15 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
       <Card className="w-full max-w-2xl bg-white">
-        <div className="flex flex-col h-[600px]">
+        <Tabs defaultValue="chat" value={activeTab} onValueChange={setActiveTab}>
           <div className="p-4 border-b">
-            <h2 className="text-xl font-semibold">Chat with Claude</h2>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="chat">Chat</TabsTrigger>
+              <TabsTrigger value="longform">Longform Input</TabsTrigger>
+            </TabsList>
           </div>
+          <div className="flex flex-col h-[600px]">
+            <TabsContent value="chat" className="flex-1 flex flex-col">
           
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
@@ -108,8 +124,22 @@ function App() {
                 <Send className="w-4 h-4" />
               )}
             </Button>
+            </TabsContent>
+            <TabsContent value="longform" className="flex-1 flex flex-col p-4">
+              <Textarea
+                value={longformInput}
+                onChange={handleLongformInput}
+                placeholder="Paste your text here..."
+                className="flex-1 mb-4 min-h-[400px]"
+              />
+              {longformResponse && (
+                <div className="p-4 bg-gray-100 rounded-lg">
+                  <p className="text-gray-900">{longformResponse}</p>
+                </div>
+              )}
+            </TabsContent>
           </div>
-        </div>
+        </Tabs>
       </Card>
     </div>
   )
