@@ -4,7 +4,7 @@ import { defineConfig } from "vite"
 
 export default defineConfig({
   plugins: [react()],
-  base: '/AI4I testing/',  // Base URL for Internal Hub deployment
+  base: '/AI4I-testing/',  // Base URL for Internal Hub deployment
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
