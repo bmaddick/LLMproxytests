@@ -4,7 +4,7 @@ import { Input } from "./components/ui/input"
 import { Button } from "./components/ui/button"
 import { ScrollArea } from "./components/ui/scroll-area"
 import { Send } from "lucide-react"
-import { apiClient } from './lib/api/claude'
+import { apiClient } from './lib/api/openai'
 import type { Message as ApiMessage } from './lib/api/types'
 
 interface ChatMessage {
@@ -59,7 +59,7 @@ function App() {
       <Card className="w-full max-w-2xl bg-white">
         <div className="flex flex-col h-[600px]">
           <div className="p-4 border-b">
-            <h2 className="text-xl font-semibold">Chat with Claude</h2>
+            <h2 className="text-xl font-semibold">Chat with OpenAI</h2>
           </div>
           
           <ScrollArea className="flex-1 p-4">

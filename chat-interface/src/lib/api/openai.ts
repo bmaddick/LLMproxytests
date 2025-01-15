@@ -39,7 +39,7 @@ export class ApiClient {
     }
 
     try {
-      const response = await fetch(API_CONFIG.BEDROCK_URL, {
+      const response = await fetch(API_CONFIG.OPENAI_URL, {
         method: 'POST',
         headers: this.headers,
         body: JSON.stringify(request),

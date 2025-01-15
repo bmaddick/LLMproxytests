@@ -1,6 +1,6 @@
 export const API_CONFIG = {
-  BEDROCK_URL: 'https://llm-proxy.sandbox.indeed.net/bedrock',
-  MODEL_ID: 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
+  OPENAI_URL: '/api/openai/chat/completions',
+  MODEL_ID: 'gpt-3.5-turbo',
   // Will be populated from environment variables
   API_KEY: import.meta.env.VITE_LLM_API_KEY || '',
 }
