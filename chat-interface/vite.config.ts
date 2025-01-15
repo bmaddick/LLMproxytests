@@ -9,5 +9,15 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      '/api/bedrock': {
+        target: 'https://llm-proxy.sandbox.indeed.net',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/bedrock/, '/bedrock'),
+        secure: false,
+      },
+    },
+  },
 })
 
