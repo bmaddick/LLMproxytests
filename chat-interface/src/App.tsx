@@ -148,7 +148,7 @@ function App() {
               </Button>
             </div>
           </TabsContent>
-          <TabsContent value="longform" className="flex-1 flex flex-col h-[400px] p-0">
+          <TabsContent value="longform" className="flex flex-col h-[200px] p-0">
             <div className="flex-1 overflow-y-auto px-2 py-0">
               <Textarea
                 value={longformInput}
@@ -196,7 +196,7 @@ function App() {
             </div>
           </TabsContent>
         </Tabs>
-      </Card>
+     </Card>
     </div>
   )
 }
