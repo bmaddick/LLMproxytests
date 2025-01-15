@@ -169,11 +169,12 @@ function App() {
           </TabsContent>
           <TabsContent value="longform" className="flex flex-col h-[600px] p-0">
             <div className="overflow-y-auto px-2 py-2">
+
               <Textarea
                 value={longformInput}
                 onChange={handleLongformInput}
                 placeholder="Paste your Salesforce case description here..."
-                className="w-full mb-4 min-h-[200px] resize-none"
+                className="w-full mb-4 min-h-[300px] resize-none"
                 disabled={isLoading}
               />
               <div className="flex justify-end mb-4">
@@ -215,7 +216,7 @@ function App() {
             </div>
           </TabsContent>
         </Tabs>
-      </Card>
+     </Card>
     </div>
   )
 }
