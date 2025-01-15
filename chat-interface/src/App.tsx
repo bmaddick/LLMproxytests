@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from "./components/ui/card"
 import { Input } from "./components/ui/input"
 import { Button } from "./components/ui/button"
@@ -16,6 +16,8 @@ interface ChatMessage {
 }
 
 function App() {
+  console.log('[Debug] App component rendering');
+  
   const [activeTab, setActiveTab] = useState('chat')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputText, setInputText] = useState('')
@@ -23,6 +25,16 @@ function App() {
   const [longformResponse, setLongformResponse] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Debug state changes
+  useEffect(() => {
+    console.log('[Debug] State updated:', {
+      activeTab,
+      longformInput: longformInput.length,
+      isLoading,
+      hasError: !!error
+    });
+  }, [activeTab, longformInput, isLoading, error]);
 
   const handleLongformInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
@@ -33,22 +45,32 @@ function App() {
   }
 
   const handleSubmitLongformCase = async () => {
-    if (!longformInput.trim() || isLoading) return
+    if (!longformInput.trim()) return
+    if (isLoading) {
+      console.log('[Debug] Submit blocked - already loading');
+      return;
+    }
 
-    setIsLoading(true)
-    setError(null)
+    console.log('[Debug] Starting case analysis...');
+    setIsLoading(true);
+    setError(null);
 
     try {
-      const prompt = buildCasePrompt(longformInput)
+      const prompt = buildCasePrompt(longformInput);
+      console.log('[Debug] Sending request with prompt length:', prompt.length);
+      
       const response = await apiClient.sendMessage([
         { role: 'user', content: prompt }
-      ])
-      setLongformResponse(response.content)
+      ]);
+      
+      console.log('[Debug] Received response');
+      setLongformResponse(response.content);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while analyzing the case')
-      console.error('Error:', err)
+      console.error('[Debug] Error in handleSubmitLongformCase:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred while analyzing the case');
     } finally {
-      setIsLoading(false)
+      console.log('[Debug] Resetting loading state');
+      setIsLoading(false);
     }
   }
 
@@ -88,8 +110,8 @@ function App() {
     }
   }
   return (
-    <div className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
-      <Card className="w-full max-w-2xl bg-white">
+    <div className="min-h-screen bg-gray-100 flex items-start justify-center pt-2">
+      <Card className="w-full max-w-2xl bg-white shadow-sm mt-0">
         <Tabs defaultValue="chat" value={activeTab} onValueChange={setActiveTab}>
           <div className="border-b">
             <TabsList className="grid w-full grid-cols-2">
@@ -145,8 +167,8 @@ function App() {
               </Button>
             </div>
           </TabsContent>
-          <TabsContent value="longform" className="flex-1 flex flex-col h-[400px] p-0">
-            <div className="flex-1 overflow-y-auto px-2 py-0">
+          <TabsContent value="longform" className="flex flex-col h-[600px] p-0">
+            <div className="overflow-y-auto px-2 py-2">
               <Textarea
                 value={longformInput}
                 onChange={handleLongformInput}
@@ -157,7 +179,7 @@ function App() {
               <div className="flex justify-end mb-4">
                 <Button 
                   onClick={handleSubmitLongformCase} 
-                  disabled={!longformInput.trim() || isLoading}
+                  disabled={isLoading}
                   className="px-4"
                 >
                   {isLoading ? (
