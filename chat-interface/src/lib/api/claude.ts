@@ -90,13 +90,35 @@ export class ApiClient {
         contentLength: JSON.stringify(request).length,
       });
 
+      console.log('[API Debug] Sending request:', {
+        url: API_CONFIG.BEDROCK_URL,
+        method: 'POST',
+        headers: {
+          ...this.headers,
+          'Authorization': this.headers.Authorization ? '[REDACTED]' : 'MISSING'
+        },
+        bodyLength: JSON.stringify(request).length
+      });
+
       const response = await fetch(API_CONFIG.BEDROCK_URL, {
         method: 'POST',
         headers: this.headers,
         body: JSON.stringify(request),
-      })
+      });
 
-      const data = await this.handleResponse<ChatCompletionResponse>(response)
+      console.log('[API Debug] Received response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
+      const responseText = await response.text();
+      console.log('[API Debug] Response body:', {
+        length: responseText.length,
+        preview: responseText.substring(0, 100)
+      });
+
+      const data = JSON.parse(responseText) as ChatCompletionResponse;
       return data.choices[0].message
     } catch (error) {
       // Enhanced error logging for content moderation
