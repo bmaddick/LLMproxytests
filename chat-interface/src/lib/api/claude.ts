@@ -112,13 +112,7 @@ export class ApiClient {
         headers: Object.fromEntries(response.headers.entries())
       });
 
-      const responseText = await response.text();
-      console.log('[API Debug] Response body:', {
-        length: responseText.length,
-        preview: responseText.substring(0, 100)
-      });
-
-      const data = JSON.parse(responseText) as ChatCompletionResponse;
+      const data = await this.handleResponse<ChatCompletionResponse>(response);
       return data.choices[0].message
     } catch (error) {
       // Enhanced error logging for content moderation
