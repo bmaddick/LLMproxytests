@@ -84,13 +84,8 @@ export class ApiClient {
         },
       });
 
-      // Log request details for debugging content moderation
+      // Log minimal request details for debugging
       console.log('[API Request] Sending message:', {
-        url: API_CONFIG.BEDROCK_URL,
-        headers: {
-          ...this.headers,
-          'Authorization': this.headers.Authorization ? '[REDACTED]' : 'MISSING',
-        },
         messageCount: messages.length,
         contentLength: JSON.stringify(request).length,
       });
