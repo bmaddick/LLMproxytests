@@ -16,6 +16,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/bedrock/, '/bedrock'),
         secure: false,
+        headers: {
+          'Origin': 'http://localhost:5173',
+          'Referer': 'http://localhost:5173/',
+        },
       },
     },
   },
