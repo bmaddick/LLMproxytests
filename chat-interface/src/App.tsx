@@ -5,9 +5,10 @@ import { Button } from "./components/ui/button"
 import { ScrollArea } from "./components/ui/scroll-area"
 import { Textarea } from "./components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"
-import { Send } from "lucide-react"
+import { Send, Loader2 } from "lucide-react"
 import { apiClient } from './lib/api/claude'
 import type { Message as ApiMessage } from './lib/api/types'
+import { buildCasePrompt } from './lib/prompts/aiPrompts'
 
 interface ChatMessage {
   text: string
@@ -26,7 +27,29 @@ function App() {
   const handleLongformInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
     setLongformInput(value)
-    setLongformResponse(value.trim() ? 'Input received' : '')
+    if (!value.trim()) {
+      setLongformResponse('')
+    }
+  }
+
+  const handleSubmitLongformCase = async () => {
+    if (!longformInput.trim() || isLoading) return
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const prompt = buildCasePrompt(longformInput)
+      const response = await apiClient.sendMessage([
+        { role: 'user', content: prompt }
+      ])
+      setLongformResponse(response.content)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred while analyzing the case')
+      console.error('Error:', err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSend = async () => {
@@ -128,12 +151,44 @@ function App() {
             <Textarea
               value={longformInput}
               onChange={handleLongformInput}
-              placeholder="Paste your text here..."
+              placeholder="Paste your Salesforce case description here..."
               className="flex-1 mb-4 min-h-[400px]"
+              disabled={isLoading}
             />
+            <div className="flex justify-end mb-4">
+              <Button 
+                onClick={handleSubmitLongformCase} 
+                disabled={!longformInput.trim() || isLoading}
+                className="px-4"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : null}
+                Analyze Case
+              </Button>
+            </div>
+            {error && (
+              <div className="p-2 mb-4 text-red-500 text-sm bg-red-50 rounded">
+                {error}
+              </div>
+            )}
             {longformResponse && (
-              <div className="p-4 bg-gray-100 rounded-lg">
-                <p className="text-gray-900">{longformResponse}</p>
+              <div className="p-4 bg-gray-100 rounded-lg space-y-4">
+                <h3 className="font-semibold text-lg text-gray-900">Case Analysis Results</h3>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-800">Problem Tags</h4>
+                    <div className="mt-1 text-gray-700">{longformResponse.split('PROBLEM TAGS:')[1]?.split('MISSING INFORMATION:')[0]}</div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-800">Missing Information</h4>
+                    <div className="mt-1 text-gray-700">{longformResponse.split('MISSING INFORMATION:')[1]?.split('SELF-SERVICE:')[0]}</div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-800">Self-Service Assessment</h4>
+                    <div className="mt-1 text-gray-700">{longformResponse.split('SELF-SERVICE:')[1]}</div>
+                  </div>
+                </div>
               </div>
             )}
           </TabsContent>
