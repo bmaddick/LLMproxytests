@@ -90,8 +90,11 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
       <Card className="w-full max-w-2xl bg-white">
-        <Tabs defaultValue="chat" value={activeTab} onValueChange={setActiveTab}>
-          <div className="border-b">
+        <Tabs defaultValue="chat" value={activeTab} onValueChange={(tab) => {
+            setActiveTab(tab);
+            console.log('Active Tab:', tab); // Add this line here
+          }}>
+          <div className={`border-b ${activeTab === 'longform' ? 'h-1' : 'h-16'}`}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="chat">Chat</TabsTrigger>
               <TabsTrigger value="longform">Longform Input</TabsTrigger>
@@ -151,7 +154,7 @@ function App() {
                 value={longformInput}
                 onChange={handleLongformInput}
                 placeholder="Paste your Salesforce case description here..."
-                className="w-full mb-4 min-h-[200px] resize-none"
+                className="w-full mb-4 min-h-[300px] resize-none"
                 disabled={isLoading}
               />
               <div className="flex justify-end mb-4">
