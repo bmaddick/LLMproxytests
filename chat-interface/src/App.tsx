@@ -75,70 +75,68 @@ function App() {
               <TabsTrigger value="longform">Longform Input</TabsTrigger>
             </TabsList>
           </div>
-          <div className="flex flex-col h-[600px]">
-            <TabsContent value="chat" className="flex-1 flex flex-col">
-          
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-4">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
-                >
+          <TabsContent value="chat" className="flex-1 flex flex-col h-[600px]">
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                {messages.map((message, index) => (
                   <div
-                    className={`rounded-lg px-4 py-2 max-w-sm ${
-                      message.isUser
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-100 text-gray-900'
-                    }`}
+                    key={index}
+                    className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
                   >
-                    {message.text}
+                    <div
+                      className={`rounded-lg px-4 py-2 max-w-sm ${
+                        message.isUser
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100 text-gray-900'
+                      }`}
+                    >
+                      {message.text}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+                ))}
+              </div>
+            </ScrollArea>
 
-          {error && (
-            <div className="p-2 m-4 text-red-500 text-sm bg-red-50 rounded">
-              {error}
-            </div>
-          )}
-          <div className="p-4 border-t flex gap-2">
-            <Input
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder="Type your message..."
-              className="flex-1"
-              disabled={isLoading}
-            />
-            <Button 
-              onClick={handleSend} 
-              className="px-4"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
-            </Button>
-            </TabsContent>
-            <TabsContent value="longform" className="flex-1 flex flex-col p-4">
-              <Textarea
-                value={longformInput}
-                onChange={handleLongformInput}
-                placeholder="Paste your text here..."
-                className="flex-1 mb-4 min-h-[400px]"
+            {error && (
+              <div className="p-2 m-4 text-red-500 text-sm bg-red-50 rounded">
+                {error}
+              </div>
+            )}
+            <div className="p-4 border-t flex gap-2">
+              <Input
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder="Type your message..."
+                className="flex-1"
+                disabled={isLoading}
               />
-              {longformResponse && (
-                <div className="p-4 bg-gray-100 rounded-lg">
-                  <p className="text-gray-900">{longformResponse}</p>
-                </div>
-              )}
-            </TabsContent>
-          </div>
+              <Button 
+                onClick={handleSend} 
+                className="px-4"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
+          </TabsContent>
+          <TabsContent value="longform" className="flex-1 flex flex-col h-[600px] p-4">
+            <Textarea
+              value={longformInput}
+              onChange={handleLongformInput}
+              placeholder="Paste your text here..."
+              className="flex-1 mb-4 min-h-[400px]"
+            />
+            {longformResponse && (
+              <div className="p-4 bg-gray-100 rounded-lg">
+                <p className="text-gray-900">{longformResponse}</p>
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </Card>
     </div>
